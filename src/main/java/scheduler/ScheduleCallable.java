@@ -4,9 +4,9 @@ import java.time.Clock;
 import java.util.concurrent.Callable;
 
 public abstract class ScheduleCallable implements Callable<Void>{
-    volatile public Clock clock;
+    protected final Clock clock;
 
-    public void setClock(Clock clock) {
+    public ScheduleCallable(Clock clock) {
         this.clock = clock;
     }
 }

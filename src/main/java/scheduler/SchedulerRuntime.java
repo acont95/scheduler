@@ -1,5 +1,9 @@
 package scheduler;
 
+import java.time.Clock;
+
 public interface SchedulerRuntime {
-    void run(Scheduler scheduler);
+    void start(Scheduler scheduler);
+    void stop();
+    Clock getClock();
 }

@@ -1,7 +1,6 @@
 package scheduler;
 
 import java.time.Clock;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -9,118 +8,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
-interface ScheduledTask{
-    Boolean shouldRun();
-    Future<Void> run();
-    void update();
-    ScheduleCallable getTask();
-}
 
-class SingleScheduledTask implements ScheduledTask{
-    final String name;
-    final ScheduleCallable task;
-    final ScheduleDefine sched;
-    final Scheduler scheduler;
-    final Instant scheduledTime;
-    private Future<Void> callableStatus = null;
-    Instant lastRun = null;
-
-    public SingleScheduledTask(String name, ScheduleCallable task, ScheduleDefine sched, Scheduler scheduler) {
-        this.name = name;
-        this.task = task;
-        this.sched = sched;
-        this.scheduler = scheduler;
-        this.scheduledTime = Instant.now(scheduler.getClock());
-    }
-
-    public Boolean shouldRun() {
-        if (! sched.isSynchronous()) {
-            return sched.shouldRun(scheduler.getClock(), lastRun, scheduledTime);
-        } else {
-            if (callableStatus == null || callableStatus.isDone()) {
-                return sched.shouldRun(scheduler.getClock(), lastRun, scheduledTime);
-            }
-            else {
-                return false;
-            }
-        }
-    }
-
-    public Future<Void> run() {
-        lastRun = Instant.now(scheduler.getClock());
-        task.setClock(scheduler.getClock());
-        callableStatus = scheduler.executorService.submit(task);
-        return callableStatus;
-    }
-
-    public void update() {
-        lastRun = Instant.now(scheduler.getClock());
-        task.setClock(scheduler.getClock());
-    }
-
-    public ScheduleCallable getTask() {
-        return task;
-    }
-}
-
-class MultiScheduledTask implements ScheduledTask{
-    final String name;
-    final ScheduleCallable task;
-    final ArrayList<ScheduleDefine> sched;
-    final Scheduler scheduler;
-    final Instant scheduledTime;
-    private Future<Void> callableStatus = null;
-    Instant lastRun = null;
-
-    public MultiScheduledTask(String name, ScheduleCallable task, ArrayList<ScheduleDefine> sched, Scheduler scheduler) {
-        this.name = name;
-        this.task = task;
-        this.sched = sched;
-        this.scheduler = scheduler;
-        this.scheduledTime = Instant.now(scheduler.getClock());
-    }
-
-    public Boolean shouldRun() {
-        if (sched.stream().anyMatch(val -> val.isSynchronous() == false)) {
-            return sched.stream().allMatch(val -> val.shouldRun(scheduler.getClock(), lastRun, scheduledTime));
-        } else {
-            if (callableStatus == null || callableStatus.isDone()) {
-                return sched.stream().allMatch(val -> val.shouldRun(scheduler.getClock(), lastRun, scheduledTime));
-            }
-            else {
-                return false;
-            }
-        }
-    }
-
-    public Future<Void> run() {
-        // lastRun = Instant.now(scheduler.getClock());
-        // task.setClock(scheduler.getClock());
-        update();
-        callableStatus = scheduler.executorService.submit(task);
-        return callableStatus;
-    }
-
-    public void update() {
-        lastRun = Instant.now(scheduler.getClock());
-        task.setClock(scheduler.getClock());
-    }
-
-    public ScheduleCallable getTask() {
-        return task;
-    }
-}
-
-public class Scheduler {
+public final class Scheduler {
     private final ArrayList<ScheduledTask> jobs = new ArrayList<ScheduledTask>();
-    private Clock clock;
+    private final Clock clock;
     final ExecutorService executorService;
 
-    public Scheduler(Integer nThreads) {
+    public Scheduler(Integer nThreads, Clock clock) {
         this.executorService  = Executors.newFixedThreadPool(nThreads);
-    }
-
-    public void updateClock(Clock clock) {
         this.clock = clock;
     }
 
@@ -131,22 +26,25 @@ public class Scheduler {
     public void runPending() {
         jobs.stream()
             .filter(j -> j.shouldRun())
-            .forEach(j -> j.run());
-            
-        // jobs.removeIf(j -> j.sched.shouldDelete(clock));   
+            .forEach(j -> {
+                j.update();
+                executorService.submit(j.getTask());
+            });
     }
 
-    public ArrayList<Future<Void>> runPendingCollect() {
+    public List<Future<Void>> runPendingCollect() {
         List<Future<Void>> results = jobs.stream()
             .filter(j -> j.shouldRun())
-            .map(j -> j.run())
+            .map(j -> {
+                j.update();
+                return executorService.submit(j.getTask());
+            })
             .collect(Collectors.toList());
 
-        // jobs.removeIf(j -> j.sched.shouldDelete(clock));   
-        return new ArrayList<>(results);
+        return results;
     }
 
-    public List<Future<Void>> runPendingCollectBlocking() {
+    public List<Future<Void>> runPendingCollectBlocking() throws InterruptedException{
         List<ScheduleCallable> tasks = jobs.stream()
             .filter(j -> j.shouldRun())
             .map(e -> {
@@ -155,33 +53,23 @@ public class Scheduler {
             })
             .collect(Collectors.toList());
         
-        try {
-            List<Future<Void>> futures = executorService.invokeAll(tasks);
-            return futures;
-        } catch (InterruptedException e) {
-            System.err.format("IOException: %s%n", e);
-            return null;
-        }
-
+        List<Future<Void>> futures = executorService.invokeAll(tasks);
+        return futures;
     }
 
     public ArrayList<ScheduledTask> getJobs() {
         return jobs;
     }
 
-    public void schedule(String name, ScheduleCallable task, ScheduleDefine sched) {
-        addJob(new SingleScheduledTask(name, task, sched, this));
+    public void schedule(ScheduledTask task) {
+        jobs.add(task);
     } 
 
-    public void schedule(String name, ScheduleCallable task, ArrayList<ScheduleDefine> schedules) {
-        addJob(new MultiScheduledTask(name, task, schedules, this));
+    public void removeJob(ScheduledTask task) {
+        jobs.remove(task);
     }
 
-    void addJob(ScheduledTask job) {
-        jobs.add(job);
-    }
-
-    public void start(SchedulerRuntime runtime) {
-        runtime.run(this);
+    public void removeJob(String name) {
+        jobs.removeIf(j -> j.getName().equals(name));   
     }
 }

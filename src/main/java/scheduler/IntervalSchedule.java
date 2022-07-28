@@ -4,43 +4,33 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 
-public final class IntervalSpecifiedTask implements ScheduleDefine{
+public final class IntervalSchedule implements ScheduleDefine{
     private final Boolean alignedToEpoch;
     private final Duration intervalDuration;
-    private final Boolean synchronous;
     private final Duration initialDelay;
     private final long durationMilli;
-    
 
-    private IntervalSpecifiedTask(Boolean alignedToEpoch, Duration intervalDuration, Boolean synchronous, Duration initialDelay, long durationMilli) {
+    private IntervalSchedule(Boolean alignedToEpoch, Duration intervalDuration, Duration initialDelay, long durationMilli) {
         this.alignedToEpoch = alignedToEpoch;
         this.intervalDuration = intervalDuration;
-        this.synchronous = synchronous;
         this.initialDelay = initialDelay;
         this.durationMilli = durationMilli;
     }
 
     @Override
-    public Boolean isSynchronous() {
-        return synchronous;
-    }
-
-    @Override
     public Boolean shouldRun(Clock clock, Instant lastRun, Instant scheduledTime) {
         Instant now = Instant.now(clock);
-        if (lastRun != null) {
-            if (alignedToEpoch) {
-                return shouldRunAlgined(now, lastRun);
-            }
-            else {
-                return shouldRunNormal(now, lastRun);
-            }
-        } else {
-            return shouldRunInitial(now, scheduledTime);
+        if (alignedToEpoch) {
+            return shouldRunAlgined(now, lastRun);
+        }
+        else {
+            return shouldRunNormal(now, lastRun);
         }
     }
 
-    private Boolean shouldRunInitial(Instant now, Instant scheduledTime) {
+    @Override
+    public Boolean shouldRunInit(Clock clock, Instant scheduledTime) {
+        Instant now = Instant.now(clock);
         if (!alignedToEpoch) {
             return now.isAfter(scheduledTime.plus(initialDelay)) || now.equals(scheduledTime.plus(initialDelay));
         } else {
@@ -81,7 +71,6 @@ public final class IntervalSpecifiedTask implements ScheduleDefine{
     public static class Builder implements ScheduleBuilder, Every{
         private Boolean alignedToEpoch = false;
         private Duration intervalDuration;
-        private Boolean synchronous = false;
         private Duration initialDelay = null;
         private long durationMilli;
 
@@ -98,11 +87,6 @@ public final class IntervalSpecifiedTask implements ScheduleDefine{
             return this;
         }
     
-        public Builder synchronous() {
-            synchronous = true;
-            return this;
-        }
-    
         public Builder every(Duration intervalDuration) {
             this.intervalDuration = intervalDuration;
             this.initialDelay = intervalDuration;
@@ -115,8 +99,8 @@ public final class IntervalSpecifiedTask implements ScheduleDefine{
         }
 
         @Override
-        public IntervalSpecifiedTask build() {
-            return new IntervalSpecifiedTask(alignedToEpoch, intervalDuration, synchronous, initialDelay, durationMilli);
+        public IntervalSchedule build() {
+            return new IntervalSchedule(alignedToEpoch, intervalDuration, initialDelay, durationMilli);
         }
     } 
 }
