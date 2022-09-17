@@ -3,15 +3,18 @@ package scheduler;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.Period;
+import java.time.ZoneId;
 
 public final class PeriodSchedule implements ScheduleDefine{
     private final Period intervalPeriod;
     private final Period initialDelay;
+    private final ZoneId timeZone;
     
 
-    private PeriodSchedule(Period intervalPeriod, Period initialDelay, long durationMilli) {
+    private PeriodSchedule(Period intervalPeriod, Period initialDelay, ZoneId timeZone) {
         this.intervalPeriod = intervalPeriod;
         this.initialDelay = initialDelay;
+        this.timeZone = timeZone;
     }
 
     @Override
@@ -38,7 +41,7 @@ public final class PeriodSchedule implements ScheduleDefine{
     public static class Builder implements ScheduleBuilder, Every{
         private Period intervalPeriod;
         private Period initialDelay = Period.ZERO;
-        private long durationMilli;
+        private ZoneId timeZone = Clock.systemUTC().getZone();
 
         private Builder() {
         }
@@ -46,10 +49,14 @@ public final class PeriodSchedule implements ScheduleDefine{
         public static Every getInstance() {
             return new Builder();
         }
+
+        public Builder withZone(ZoneId timeZone) {
+            this.timeZone = timeZone;
+            return this;
+        }
     
         public Builder every(Period intervalPeriod) {
             this.intervalPeriod = intervalPeriod;
-            this.initialDelay = intervalPeriod;
             return this;
         }
 
@@ -60,7 +67,7 @@ public final class PeriodSchedule implements ScheduleDefine{
 
         @Override
         public PeriodSchedule build() {
-            return new PeriodSchedule(intervalPeriod, initialDelay, durationMilli);
+            return new PeriodSchedule(intervalPeriod, initialDelay, timeZone);
         }
     } 
 }

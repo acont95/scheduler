@@ -24,6 +24,15 @@ public final class SingleScheduledTask implements ScheduledTask{
         this.synchronous = synchronous;
     }
 
+    public SingleScheduledTask(String name, ScheduleCallable task, ScheduleDefine sched, Clock clock) {
+        this.name = name;
+        this.task = task;
+        this.sched = sched;
+        this.clock = clock;
+        this.scheduledTime = Instant.now(clock);
+        this.synchronous = true;
+    }
+
     public Boolean shouldRun() {
 
         if (init) {
@@ -48,8 +57,9 @@ public final class SingleScheduledTask implements ScheduledTask{
         }
     }
 
-    public void update() {
+    public void setLastRun(Future<Void> callableStatus) {
         lastRun = Instant.now(clock);
+        this.callableStatus = callableStatus;
     }
 
     public ScheduleCallable getTask() {

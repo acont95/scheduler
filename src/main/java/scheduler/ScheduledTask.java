@@ -1,8 +1,10 @@
 package scheduler;
 
+import java.util.concurrent.Future;
+
 public interface ScheduledTask {
     Boolean shouldRun();
-    void update();
+    void setLastRun(Future<Void> callableStatus);
     ScheduleCallable getTask();
     String getName();
 }
