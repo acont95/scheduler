@@ -150,7 +150,7 @@ Alternatively, create a WallClockRuntime object:
 SchedulerRuntime runtime = new WallClockRuntime();
 ```
 
-* Create the scheduler object with a clock:
+* Create the scheduler object:
 ```java
 Scheduler s = new Scheduler(
   2 //number of executor threads
