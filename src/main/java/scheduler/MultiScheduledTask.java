@@ -15,19 +15,17 @@ public final class MultiScheduledTask implements ScheduledTask{
     private boolean init = true;
     private final boolean synchronous;
 
-    public MultiScheduledTask(String name, ScheduleCallable task, List<ScheduleDefine> sched, Clock clock, boolean synchronous) {
+    public MultiScheduledTask(String name, ScheduleCallable task, List<ScheduleDefine> sched, boolean synchronous) {
         this.name = name;
         this.task = task;
         this.sched = sched;
-        this.scheduledTime = Instant.now(clock);
         this.synchronous = synchronous;
     }
 
-    public MultiScheduledTask(String name, ScheduleCallable task, List<ScheduleDefine> sched, Clock clock) {
+    public MultiScheduledTask(String name, ScheduleCallable task, List<ScheduleDefine> sched) {
         this.name = name;
         this.task = task;
         this.sched = sched;
-        this.scheduledTime = Instant.now(clock);
         this.synchronous = true;
     }
 

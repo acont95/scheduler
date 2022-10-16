@@ -193,6 +193,26 @@ runtime.start(s);
 
 _For more examples, please refer to the [Documentation](https://example.com)_
 
+### Currently implemented schedules:
+* Day of month
+* Day of week
+* Interval (Duration)
+* Local time
+* Month day
+* Month
+* Weekday
+* Period
+
+Schedules can be combined into a MultiScheduledTask object which will only run when each schedules shouldRun method evaluates to true: 
+
+```java
+List<ScheduleDefine> scheduleList = new ArrayList<>();
+scheduleList.add(sched)
+...
+ScheduledTask task = new MultiScheduledTask("print_instant_daily_task", new TestSchedulerCallable(), scheduleList);
+
+```
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
