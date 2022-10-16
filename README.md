@@ -112,7 +112,7 @@ The goal of this project is to develop a simple to use multi threaded task sched
 
 ### Maven
 
-Functionality of this package is contrained in the Java package org.ac.scheduler.
+Functionality of this package is contained in the Java package org.ac.scheduler.
 
 To use this package, add the following Maven dependency to your project (WIP):
 
@@ -126,7 +126,7 @@ To use this package, add the following Maven dependency to your project (WIP):
 
 ### Non-Maven
 
-For non-maven use cases, you can download JAR's from the Maven Central Repository. (WIP)
+For non-maven use cases, you can download a JAR from the Maven Central Repository. (WIP)
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
