@@ -8,32 +8,31 @@ public final class SingleScheduledTask implements ScheduledTask{
     private final String name;
     private final ScheduleCallable task;
     private final ScheduleDefine sched;
-    private final Instant scheduledTime;
+    private Instant scheduledTime;
     private Future<Void> callableStatus;
     private Instant lastRun;
-    private final Clock clock;
     private boolean init = true;
     private final boolean synchronous;
 
-    public SingleScheduledTask(String name, ScheduleCallable task, ScheduleDefine sched, Clock clock, boolean synchronous) {
+    public SingleScheduledTask(String name, ScheduleCallable task, ScheduleDefine sched, boolean synchronous) {
         this.name = name;
         this.task = task;
         this.sched = sched;
-        this.clock = clock;
-        this.scheduledTime = Instant.now(clock);
         this.synchronous = synchronous;
     }
 
-    public SingleScheduledTask(String name, ScheduleCallable task, ScheduleDefine sched, Clock clock) {
+    public SingleScheduledTask(String name, ScheduleCallable task, ScheduleDefine sched) {
         this.name = name;
         this.task = task;
         this.sched = sched;
-        this.clock = clock;
-        this.scheduledTime = Instant.now(clock);
         this.synchronous = true;
     }
 
-    public Boolean shouldRun() {
+    public void setScheduledTime(Instant scheduledTime) {
+        this.scheduledTime = scheduledTime;
+    }
+
+    public Boolean shouldRun(Clock clock) {
 
         if (init) {
             boolean shouldRun = sched.shouldRunInit(clock, scheduledTime);
@@ -57,7 +56,7 @@ public final class SingleScheduledTask implements ScheduledTask{
         }
     }
 
-    public void setLastRun(Future<Void> callableStatus) {
+    public void setLastRun(Future<Void> callableStatus, Clock clock) {
         lastRun = Instant.now(clock);
         this.callableStatus = callableStatus;
     }
@@ -68,5 +67,9 @@ public final class SingleScheduledTask implements ScheduledTask{
 
     public String getName() {
         return name;
+    }
+
+    public void setClock(Clock clock) {
+        task.setClock(clock);
     }
 }

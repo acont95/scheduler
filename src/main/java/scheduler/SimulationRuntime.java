@@ -17,6 +17,7 @@ public final class SimulationRuntime implements SchedulerRuntime{
     }   
 
     public void start(Scheduler scheduler){
+        scheduler.setClocks(clock);
         long sleepMillis;
         if (simulationConfig.stepPause().equals(Duration.ZERO)) {
             sleepMillis = 0;
@@ -32,7 +33,7 @@ public final class SimulationRuntime implements SchedulerRuntime{
                 if (sleepMillis != 0) {
                     Thread.sleep(sleepMillis);
                 }
-                scheduler.runPendingBlocking();
+                scheduler.runPendingBlocking(clock);
                 clock.add(simulationConfig.step());
 
             } catch (InterruptedException e) {

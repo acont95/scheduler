@@ -9,8 +9,7 @@ public final class MultiScheduledTask implements ScheduledTask{
     private final String name;
     private final ScheduleCallable task;
     private final List<ScheduleDefine> sched;
-    private final Clock clock;
-    private final Instant scheduledTime;
+    private Instant scheduledTime;
     private Future<Void> callableStatus = null;
     private Instant lastRun;
     private boolean init = true;
@@ -20,7 +19,6 @@ public final class MultiScheduledTask implements ScheduledTask{
         this.name = name;
         this.task = task;
         this.sched = sched;
-        this.clock = clock;
         this.scheduledTime = Instant.now(clock);
         this.synchronous = synchronous;
     }
@@ -29,12 +27,15 @@ public final class MultiScheduledTask implements ScheduledTask{
         this.name = name;
         this.task = task;
         this.sched = sched;
-        this.clock = clock;
         this.scheduledTime = Instant.now(clock);
         this.synchronous = true;
     }
 
-    public Boolean shouldRun() {
+    public void setScheduledTime(Instant scheduledTime) {
+        this.scheduledTime = scheduledTime;
+    }
+
+    public Boolean shouldRun(Clock clock) {
         if (init) {
             boolean shouldRun = sched.stream().allMatch(val -> val.shouldRunInit(clock, scheduledTime));
             if (shouldRun) {
@@ -57,7 +58,7 @@ public final class MultiScheduledTask implements ScheduledTask{
         }
     }
 
-    public void setLastRun(Future<Void> callableStatus) {
+    public void setLastRun(Future<Void> callableStatus, Clock clock) {
         lastRun = Instant.now(clock);
         this.callableStatus = callableStatus;
     }
@@ -68,5 +69,9 @@ public final class MultiScheduledTask implements ScheduledTask{
 
     public String getName() {
         return name;
+    }
+
+    public void setClock(Clock clock) {
+        task.setClock(clock);
     }
 }

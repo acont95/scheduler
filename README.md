@@ -153,8 +153,7 @@ SchedulerRuntime runtime = new WallClockRuntime();
 * Create the scheduler object with a clock:
 ```java
 Scheduler s = new Scheduler(
-  2, \\number of executor threads
-  runtime.getClock()
+  2 //number of executor threads
 );
 ```
 
@@ -169,9 +168,6 @@ ScheduleDefine sched = PeriodSchedule.Builder.getInstance()
 ```java
 class TestSchedulerCallable extends ScheduleCallable {
 
-    public TestSchedulerCallable(Clock clock) {
-        super(clock);
-    }
     @Override
     public Void call() {
         System.out.println(Instant.now(clock));
@@ -182,13 +178,16 @@ class TestSchedulerCallable extends ScheduleCallable {
 
 * Create a schedule task:
 ```java
-ScheduledTask task = new SingleScheduledTask("print_instant_daily_task", new TestSchedulerCallable(runtime.getClock()), sched, runtime.getClock());
+ScheduledTask task = new SingleScheduledTask("print_instant_daily_task", new TestSchedulerCallable(), sched);
 
 ```
 
 * Pass your task to the scheduler and run:
 ```java
-s.schedule(task);
+s.schedule(
+  task,
+  runtime.getClock().instant() //scheduled time
+);
 runtime.start(s);
 ```
 
