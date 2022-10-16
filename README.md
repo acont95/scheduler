@@ -133,21 +133,29 @@ For non-maven use cases, you can download JAR's from the Maven Central Repositor
 
 <!-- USAGE EXAMPLES -->
 ## Usage
-* Create a runtime object:
+* Create a runtime object. Below a clock (specifically MutableClock from ThreeTen Extra) is set at a user defined start time, end time, step, and step delay:
 ```java
 SimulationConfig simulationConfig = new SimulationConfig(
-    ZonedDateTime.of(2016, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC")), 
-    ZonedDateTime.of(2017, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC")), 
-    Duration.ofDays(1), 
-    Duration.ZERO
+    ZonedDateTime.of(2016, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC")), //start
+    ZonedDateTime.of(2017, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC")), //end
+    Duration.ofDays(1), //step
+    Duration.ZERO //pause between step
 );
 SchedulerRuntime runtime = new SimulationRuntime(simulationConfig);
 ```
 
+Alternatively, create a WallClockRuntime object: 
+
+```java
+SchedulerRuntime runtime = new WallClockRuntime();
+```
+
 * Create the scheduler object with a clock:
 ```java
-Clock clock = Clock.systemUTC();
-Scheduler s = new Scheduler(2, clock);
+Scheduler s = new Scheduler(
+  2, \\number of executor threads
+  runtime.getClock()
+);
 ```
 
 * Define a schedule to run tasks:
@@ -174,7 +182,7 @@ class TestSchedulerCallable extends ScheduleCallable {
 
 * Create a schedule task:
 ```java
-ScheduledTask task = new SingleScheduledTask("print_instant_daily_task", new TestSchedulerCallable(clock), sched, clock);
+ScheduledTask task = new SingleScheduledTask("print_instant_daily_task", new TestSchedulerCallable(runtime.getClock()), sched, runtime.getClock());
 
 ```
 
@@ -193,10 +201,9 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 <!-- ROADMAP -->
 ## Roadmap
 
-- [ ] Feature 1
-- [ ] Feature 2
-- [ ] Feature 3
-    - [ ] Nested Feature
+- [ ] Better support for logical combination of schedules to create more complex schedules.
+- [ ] Use JSON file for simulation config.
+
 
 See the [open issues](https://github.com/acont95/flight-controller/issues) for a full list of proposed features (and known issues).
 

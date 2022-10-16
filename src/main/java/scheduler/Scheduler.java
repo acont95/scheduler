@@ -52,30 +52,6 @@ public final class Scheduler {
         return futures;
     }
 
-    // public List<Future<Void>> runPendingCollect() {
-    //     List<Future<Void>> results = jobs.stream()
-    //         .filter(j -> j.shouldRun())
-    //         .map(j -> {
-    //             j.setLastRun();
-    //             return executorService.submit(j.getTask());
-    //         })
-    //         .collect(Collectors.toList());
-
-    //     return results;
-    // }
-
-    // public List<Future<Void>> runPendingCollectBlocking() throws InterruptedException{
-    //     List<ScheduleCallable> tasks = jobs.stream()
-    //         .filter(j -> j.shouldRun())
-    //         .map(e -> {
-    //             return e.getTask();
-    //         })
-    //         .collect(Collectors.toList());
-        
-    //     List<Future<Void>> futures = executorService.invokeAll(tasks);
-    //     return futures;
-    // }
-
     public ArrayList<ScheduledTask> getJobs() {
         return jobs;
     }

@@ -39,7 +39,6 @@ public final class SimulationRuntime implements SchedulerRuntime{
                 System.err.format("IOException: %s%n", e);
             }
         }
-        run = false;
     }
 
     public Clock getClock() {
