@@ -266,5 +266,5 @@ Project Link: [https://github.com/acont95/flight-controller](https://github.com/
 [linkedin-url]: https://linkedin.com/in/alex-conticello-8555bb101
 [product-screenshot]: images/air-drone-icon.png
 
-[Java]: https://img.shields.io/badge/-java-black?style=for-the-badge&logo=java&logoColor=white
+[Java]: https://img.shields.io/badge/-java-blue?style=for-the-badge&logo=java&logoColor=white
 [Java-url]: https://www.java.com/en/
