@@ -133,7 +133,7 @@ For non-maven use cases, you can download a JAR from the Maven Central Repositor
 
 <!-- USAGE EXAMPLES -->
 ## Usage
-* Create a runtime object. Below a clock (specifically MutableClock from ThreeTen Extra) is set at a user defined start time, end time, step, and step delay:
+* Create a runtime object. A SimulationRuntime can be created which use's an "artificial" clock (specifically MutableClock from ThreeTen Extra).  Set a user defined start time, end time, step, and step delay:
 ```java
 SimulationConfig simulationConfig = new SimulationConfig(
     ZonedDateTime.of(2016, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC")), //start
@@ -144,7 +144,7 @@ SimulationConfig simulationConfig = new SimulationConfig(
 SchedulerRuntime runtime = new SimulationRuntime(simulationConfig);
 ```
 
-Alternatively, create a WallClockRuntime object: 
+Alternatively, create a WallClockRuntime object to use the SystemUTC clock: 
 
 ```java
 SchedulerRuntime runtime = new WallClockRuntime();
@@ -220,8 +220,9 @@ ScheduledTask task = new MultiScheduledTask("print_instant_daily_task", new Test
 <!-- ROADMAP -->
 ## Roadmap
 
-- [ ] Better support for logical combination of schedules to create more complex schedules.
-- [ ] Use JSON file for simulation config.
+- [ ] Add optional task persistence.
+- [X] Better support for logical combination of schedules to create more complex schedules.
+- [X] Use JSON file for simulation config.
 
 
 See the [open issues](https://github.com/acont95/flight-controller/issues) for a full list of proposed features (and known issues).
