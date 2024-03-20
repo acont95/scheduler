@@ -7,8 +7,7 @@ import java.util.concurrent.Future;
 public interface ScheduledTask {
     void setScheduledTime(Instant scheduledTime);
     Boolean shouldRun(Clock clock);
-    void setLastRun(Future<Void> callableStatus, Clock clock);
+    void setLastRun(Future<Void> callableStatus, Instant lastRun);
     ScheduleCallable getTask();
     String getName();
-    void setClock(Clock clock);
 }

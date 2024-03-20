@@ -1,8 +1,0 @@
-{
-    //ISO 8601 start and end time
-    "start":"2016-01-01 00:00:00",
-    "end":"2017-01-01 00:00:00",
-    //ISO 8601 trading period in format: P(n)Y(n)M(n)DT(n)H(n)M(n)S
-    "step":"T30M",
-    "step_pause":"T1S"
-}

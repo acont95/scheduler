@@ -18,7 +18,6 @@ public final class WallClockRuntime implements SchedulerRuntime{
     }   
 
     public void start(Scheduler scheduler){
-        scheduler.setClocks(clock);
         run = true;
         while (run) {
             try {

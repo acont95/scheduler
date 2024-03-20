@@ -4,6 +4,7 @@ import java.time.Clock;
 import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
 public final class DayOfWeekSchedule implements ScheduleDefine{
@@ -34,25 +35,12 @@ public final class DayOfWeekSchedule implements ScheduleDefine{
         return false;
     }
 
-    interface Every {
-        Builder every(DayOfWeek dayOfWeek);
-    }
-
-    public static class Builder implements ScheduleBuilder, Every{
+    public static class Builder {
         private DayOfWeek dayOfWeek;
-        private ZoneId timeZone = Clock.systemUTC().getZone();
+        private ZoneId timeZone = ZoneOffset.UTC;
 
-
-        private Builder() {
-        }
-
-        public static Every getInstance() {
-            return new Builder();
-        }
-    
-        public Builder every(DayOfWeek dayOfWeek) {
+        public Builder(DayOfWeek dayOfWeek) {
             this.dayOfWeek = dayOfWeek;
-            return this;
         }
 
         public Builder withZone(ZoneId timeZone) {
@@ -60,7 +48,6 @@ public final class DayOfWeekSchedule implements ScheduleDefine{
             return this;
         }
 
-        @Override
         public DayOfWeekSchedule build() {
             return new DayOfWeekSchedule(dayOfWeek, timeZone);
         }

@@ -19,7 +19,7 @@ public final class MonthSchedule implements ScheduleDefine{
     @Override
     public Boolean shouldRun(Clock clock, Instant lastRun, Instant scheduledTime) {
         ZonedDateTime now = ZonedDateTime.ofInstant(Instant.now(clock), timeZone);
-        return (! YearMonth.from(now).equals(YearMonth.from(ZonedDateTime.ofInstant(lastRun, now.getZone())))) && 
+        return (!YearMonth.from(now).equals(YearMonth.from(ZonedDateTime.ofInstant(lastRun, timeZone)))) && 
             (now.getMonth() == month);
     }
 
@@ -34,24 +34,12 @@ public final class MonthSchedule implements ScheduleDefine{
         return false;
     }
 
-    interface Every {
-        Builder every(Month month);
-    }
-
-    public static class Builder implements ScheduleBuilder, Every{
+    public static class Builder{
         private Month month;
         private ZoneId timeZone = Clock.systemUTC().getZone();
 
-        private Builder() {
-        }
-
-        public static Every getInstance() {
-            return new Builder();
-        }
-    
-        public Builder every(Month month) {
+        public Builder(Month month) {
             this.month = month;
-            return this;
         }
 
         public Builder withZone(ZoneId timeZone) {
@@ -59,7 +47,6 @@ public final class MonthSchedule implements ScheduleDefine{
             return this;
         }
 
-        @Override
         public MonthSchedule build() {
             return new MonthSchedule(month, timeZone);
         }

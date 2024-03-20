@@ -4,8 +4,12 @@ import java.time.Clock;
 import java.util.concurrent.Callable;
 
 public abstract class ScheduleCallable implements Callable<Void>{
-    protected Clock clock;
-    protected void setClock(Clock clock) {
+    private Clock clock;
+    public ScheduleCallable(Clock clock) {
         this.clock = clock;
+    }
+
+    public Clock getClock() {
+        return clock;
     }
 }

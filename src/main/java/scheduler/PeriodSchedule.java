@@ -4,29 +4,69 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.Period;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.TemporalUnit;
 
 public final class PeriodSchedule implements ScheduleDefine{
     private final Period intervalPeriod;
     private final Period initialDelay;
     private final ZoneId timeZone;
+    private final boolean truncate;
+    private final TemporalUnit temporalUnit;
     
 
-    private PeriodSchedule(Period intervalPeriod, Period initialDelay, ZoneId timeZone) {
+    private PeriodSchedule(
+        Period intervalPeriod, 
+        Period initialDelay, 
+        ZoneId timeZone, 
+        boolean truncate, 
+        TemporalUnit temporalUnit
+    ) {
         this.intervalPeriod = intervalPeriod;
         this.initialDelay = initialDelay;
         this.timeZone = timeZone;
+        this.truncate = truncate;
+        this.temporalUnit = temporalUnit;
     }
 
     @Override
     public Boolean shouldRun(Clock clock, Instant lastRun, Instant scheduledTime) {
         Instant now = Instant.now(clock);
-        return now.isAfter(lastRun.plus(intervalPeriod)) || now.equals(lastRun.plus(intervalPeriod));
+        if (!truncate) {
+            return shouldRunNormal(now, lastRun);
+        } else {
+            return shouldRunTruncated(now, lastRun);
+        }
     }
 
     @Override
     public Boolean shouldRunInit(Clock clock, Instant scheduledTime) {
         Instant now = Instant.now(clock);
-        return now.isAfter(scheduledTime.plus(initialDelay)) || now.equals(scheduledTime.plus(initialDelay));
+        if (!truncate) {
+            return now.isAfter(scheduledTime.plus(initialDelay)) || now.equals(scheduledTime.plus(initialDelay));
+        } else {
+            return shouldRunTruncatedInit(now, scheduledTime);
+        }
+    }
+
+    private Boolean shouldRunNormal(Instant now, Instant lastRun) {
+        return now.isAfter(lastRun.plus(intervalPeriod)) || now.equals(lastRun.plus(intervalPeriod));
+    }
+
+    private boolean shouldRunTruncated(Instant now, Instant lastRun) {
+        ZonedDateTime zonedNow = ZonedDateTime.ofInstant(now, timeZone);
+        return (
+            zonedNow.isAfter(ZonedDateTime.ofInstant(lastRun, timeZone).truncatedTo(temporalUnit).plus(intervalPeriod))
+            || zonedNow.equals(ZonedDateTime.ofInstant(lastRun, timeZone).truncatedTo(temporalUnit).plus(intervalPeriod))
+        );
+    }
+
+    private boolean shouldRunTruncatedInit(Instant now, Instant scheduledTime) {
+        ZonedDateTime zonedNow = ZonedDateTime.ofInstant(now, timeZone);
+        return (
+            shouldRunTruncated(now, scheduledTime.plus(initialDelay))
+            || zonedNow.equals(ZonedDateTime.ofInstant(scheduledTime, timeZone).truncatedTo(temporalUnit).plus(initialDelay))
+        );
     }
 
     @Override
@@ -34,29 +74,20 @@ public final class PeriodSchedule implements ScheduleDefine{
         return false;
     }
 
-    public interface Every {
-        Builder every(Period intervalPeriod);
-    }
-
-    public static class Builder implements ScheduleBuilder, Every{
+    public static class Builder{
         private Period intervalPeriod;
-        private Period initialDelay = Period.ZERO;
+        private Period initialDelay;
         private ZoneId timeZone = Clock.systemUTC().getZone();
+        private boolean truncate = false;
+        private TemporalUnit temporalUnit;
 
-        private Builder() {
-        }
-
-        public static Every getInstance() {
-            return new Builder();
+        public Builder(Period intervalPeriod) {
+            this.intervalPeriod = intervalPeriod;
+            this.initialDelay = intervalPeriod;
         }
 
         public Builder withZone(ZoneId timeZone) {
             this.timeZone = timeZone;
-            return this;
-        }
-    
-        public Builder every(Period intervalPeriod) {
-            this.intervalPeriod = intervalPeriod;
             return this;
         }
 
@@ -65,9 +96,14 @@ public final class PeriodSchedule implements ScheduleDefine{
             return this;
         }
 
-        @Override
+        public Builder truncateTo(TemporalUnit unit) {
+            truncate = true;
+            temporalUnit = unit;
+            return this;
+        }
+
         public PeriodSchedule build() {
-            return new PeriodSchedule(intervalPeriod, initialDelay, timeZone);
+            return new PeriodSchedule(intervalPeriod, initialDelay, timeZone, truncate, temporalUnit);
         }
     } 
 }

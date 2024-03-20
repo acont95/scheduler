@@ -1,0 +1,18 @@
+version: "3"
+
+tasks:
+
+  build:
+    desc: Scheduler build image
+    cmds:
+      - rm -rf target/*
+      - docker image build --target build --tag scheduler-build:latest .
+      - docker container create --name scheduler-build-container scheduler-build:latest
+      - docker container cp scheduler-build-container:/usr/app/target target
+      - docker container rm scheduler-build-container
+
+  test:
+    desc: Run scheduler unit tests
+    cmds:
+      - docker image build --target test --tag scheduler-test:latest .
+      - docker run --rm -v ~/.m2:/root/.m2 --name scheduler-test -it scheduler-test:latest

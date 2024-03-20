@@ -8,7 +8,3 @@ public interface ScheduleDefine {
     Boolean shouldRunInit(Clock clock, Instant scheduledTime);
     Boolean shouldDelete(Clock clock);
 }
-
-interface ScheduleBuilder {
-    ScheduleDefine build();
-}

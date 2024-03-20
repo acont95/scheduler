@@ -22,8 +22,7 @@ public final class IntervalSchedule implements ScheduleDefine{
         Instant now = Instant.now(clock);
         if (alignedToEpoch) {
             return shouldRunAlgined(now, lastRun);
-        }
-        else {
+        } else {
             return shouldRunNormal(now, lastRun);
         }
     }
@@ -34,17 +33,9 @@ public final class IntervalSchedule implements ScheduleDefine{
         if (!alignedToEpoch) {
             return now.isAfter(scheduledTime.plus(initialDelay)) || now.equals(scheduledTime.plus(initialDelay));
         } else {
-            long milli = now.toEpochMilli();
-            long scheduledTimeMilli = scheduledTime.toEpochMilli(); //time task was scheduled
-
-            long nextMin = scheduledTimeMilli + initialDelay.toMillis(); 
-            long rem = nextMin % durationMilli;
-            if (rem != 0) {
-                return milli >= nextMin - rem + durationMilli;
-            }
-            else {
-                return milli >= nextMin;
-            }
+            // Test with exact
+            // return shouldRun(clock, scheduledTime.plus(initialDelay), scheduledTime);
+            return shouldRunAlginedInit(now, scheduledTime);
         }
     }
 
@@ -54,9 +45,20 @@ public final class IntervalSchedule implements ScheduleDefine{
 
     private Boolean shouldRunAlgined(Instant now, Instant lastRun) {
         long milli = now.toEpochMilli();
-        long durationMilli = intervalDuration.toMillis();
         long lastRunMilli = lastRun.toEpochMilli();
         return (milli >= (lastRunMilli - (lastRunMilli % durationMilli) + durationMilli));
+    }
+
+    private Boolean shouldRunAlginedInit(Instant now, Instant scheduledTime) {
+        long milli = now.toEpochMilli();
+        long scheduledTimeMilli = scheduledTime.plus(initialDelay).toEpochMilli();
+        long alignedTime = scheduledTimeMilli - (scheduledTimeMilli % durationMilli);
+
+        if (alignedTime >= scheduledTimeMilli) {
+            return milli >= alignedTime;
+        } else {
+            return milli >= alignedTime + durationMilli;
+        }
     }
 
     @Override
@@ -64,32 +66,20 @@ public final class IntervalSchedule implements ScheduleDefine{
         return false;
     }
 
-    public interface Every {
-        Builder every(Duration intervalDuration);
-    }
-
-    public static class Builder implements ScheduleBuilder, Every{
+    public static class Builder {
         private Boolean alignedToEpoch = false;
         private Duration intervalDuration;
-        private Duration initialDelay = null;
+        private Duration initialDelay;
         private long durationMilli;
 
-        private Builder() {
-        }
-
-        public static Every getInstance() {
-            return new Builder();
+        public Builder(Duration intervalDuration) {
+            this.intervalDuration = intervalDuration;
+            durationMilli = intervalDuration.toMillis();
+            this.initialDelay = intervalDuration;
         }
         
         public Builder alignedToEpoch() {
             alignedToEpoch = true;
-            durationMilli = intervalDuration.toMillis();
-            return this;
-        }
-    
-        public Builder every(Duration intervalDuration) {
-            this.intervalDuration = intervalDuration;
-            this.initialDelay = intervalDuration;
             return this;
         }
 
@@ -98,7 +88,6 @@ public final class IntervalSchedule implements ScheduleDefine{
             return this;
         }
 
-        @Override
         public IntervalSchedule build() {
             return new IntervalSchedule(alignedToEpoch, intervalDuration, initialDelay, durationMilli);
         }

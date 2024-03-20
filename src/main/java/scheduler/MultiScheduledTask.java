@@ -35,13 +35,7 @@ public final class MultiScheduledTask implements ScheduledTask{
 
     public Boolean shouldRun(Clock clock) {
         if (init) {
-            boolean shouldRun = sched.stream().allMatch(val -> val.shouldRunInit(clock, scheduledTime));
-            if (shouldRun) {
-                init = false;
-                return shouldRun;
-            } else {
-                return shouldRun;
-            }
+            return sched.stream().allMatch(val -> val.shouldRunInit(clock, scheduledTime));
         } else {
             if (!synchronous) {
                 return sched.stream().allMatch(val -> val.shouldRun(clock, lastRun, scheduledTime));
@@ -56,8 +50,9 @@ public final class MultiScheduledTask implements ScheduledTask{
         }
     }
 
-    public void setLastRun(Future<Void> callableStatus, Clock clock) {
-        lastRun = Instant.now(clock);
+    public void setLastRun(Future<Void> callableStatus, Instant lastRun) {
+        init = false;
+        this.lastRun = lastRun;
         this.callableStatus = callableStatus;
     }
 
@@ -67,9 +62,5 @@ public final class MultiScheduledTask implements ScheduledTask{
 
     public String getName() {
         return name;
-    }
-
-    public void setClock(Clock clock) {
-        task.setClock(clock);
     }
 }

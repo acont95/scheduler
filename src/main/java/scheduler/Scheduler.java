@@ -10,18 +10,11 @@ import java.util.concurrent.Future;
 
 
 public final class Scheduler {
-    private final ArrayList<ScheduledTask> jobs = new ArrayList<ScheduledTask>();
+    private final List<ScheduledTask> jobs = new ArrayList<ScheduledTask>();
     final ExecutorService executorService;
 
     public Scheduler(Integer nThreads) {
         this.executorService  = Executors.newFixedThreadPool(nThreads);
-    }
-
-    public void setClocks(Clock clock) {
-        jobs.stream()
-            .forEach(j -> {
-                j.setClock(clock);
-            });
     }
 
     public List<Future<Void>> runPending(Clock clock) {
@@ -29,7 +22,7 @@ public final class Scheduler {
             .filter(j -> j.shouldRun(clock))
             .map(j -> {
                 Future<Void> result = executorService.submit(j.getTask());
-                j.setLastRun(result, clock);
+                j.setLastRun(result, clock.instant());
                 return result;
             })
             .toList();
@@ -48,13 +41,13 @@ public final class Scheduler {
         List<Future<Void>> futures = executorService.invokeAll(callables);
 
         for (int i=0; i<tasks.size(); i++) {
-            tasks.get(i).setLastRun(futures.get(i), clock);
+            tasks.get(i).setLastRun(futures.get(i), clock.instant());
         }
 
         return futures;
     }
 
-    public ArrayList<ScheduledTask> getJobs() {
+    public List<ScheduledTask> getJobs() {
         return jobs;
     }
 

@@ -32,22 +32,16 @@ public final class WeekdaySchedule implements ScheduleDefine{
         return false;
     }
 
-    public static class Builder implements ScheduleBuilder{
+    public static class Builder {
         private ZoneId timeZone = Clock.systemUTC().getZone();
 
-        private Builder() {
-        }
-
-        public static Builder getInstance() {
-            return new Builder();
-        }
+        public Builder() {}
 
         public Builder withZone(ZoneId timeZone) {
             this.timeZone = timeZone;
             return this;
         }
 
-        @Override
         public WeekdaySchedule build() {
             return new WeekdaySchedule(timeZone);
         }

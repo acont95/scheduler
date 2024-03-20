@@ -3,6 +3,7 @@ package scheduler;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
 import org.threeten.extra.DayOfMonth;
@@ -20,14 +21,17 @@ public final class DayOfMonthSchedule implements ScheduleDefine{
     public Boolean shouldRun(Clock clock, Instant lastRun, Instant scheduledTime) {
         ZonedDateTime now = ZonedDateTime.ofInstant(Instant.now(clock), timeZone);
 
-        return (! now.toLocalDate().isEqual(ZonedDateTime.ofInstant(lastRun, now.getZone()).toLocalDate())) && (DayOfMonth.from(now) == dayOfMonth);
+        return (
+            !now.toLocalDate().isEqual(ZonedDateTime.ofInstant(lastRun, now.getZone()).toLocalDate())) 
+            && (DayOfMonth.from(now).equals(dayOfMonth)
+        );
     }
 
     @Override
     public Boolean shouldRunInit(Clock clock, Instant scheduledTime) {
         ZonedDateTime now = ZonedDateTime.ofInstant(Instant.now(clock), timeZone);
 
-        return DayOfMonth.from(now) == dayOfMonth;
+        return DayOfMonth.from(now).equals(dayOfMonth);
     }
 
     @Override
@@ -35,24 +39,12 @@ public final class DayOfMonthSchedule implements ScheduleDefine{
         return false;
     }
 
-    interface Every {
-        Builder every(DayOfMonth dayOfMonth);
-    }
-
-    public static class Builder implements ScheduleBuilder, Every{
+    public static class Builder {
         private DayOfMonth dayOfMonth;
-        private ZoneId timeZone = Clock.systemUTC().getZone();
+        private ZoneId timeZone = ZoneOffset.UTC;
 
-        private Builder() {
-        }
-
-        public static Every getInstance() {
-            return new Builder();
-        }
-    
-        public Builder every(DayOfMonth dayOfMonth) {
+        public Builder(DayOfMonth dayOfMonth) {
             this.dayOfMonth = dayOfMonth;
-            return this;
         }
 
         public Builder withZone(ZoneId timeZone) {
@@ -60,7 +52,6 @@ public final class DayOfMonthSchedule implements ScheduleDefine{
             return this;
         }
 
-        @Override
         public DayOfMonthSchedule build() {
             return new DayOfMonthSchedule(dayOfMonth, timeZone);
         }

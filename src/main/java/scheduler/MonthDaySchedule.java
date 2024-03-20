@@ -18,14 +18,14 @@ public final class MonthDaySchedule implements ScheduleDefine{
     @Override
     public Boolean shouldRun(Clock clock, Instant lastRun, Instant scheduledTime) {
         ZonedDateTime now = ZonedDateTime.ofInstant(Instant.now(clock), timeZone);
-        return (! now.toLocalDate().isEqual(ZonedDateTime.ofInstant(lastRun, now.getZone()).toLocalDate())) && 
-            (MonthDay.from(now) == monthDay);
+        return (! now.toLocalDate().isEqual(ZonedDateTime.ofInstant(lastRun, timeZone).toLocalDate())) && 
+            (MonthDay.from(now).equals(monthDay));
     }
 
     @Override
     public Boolean shouldRunInit(Clock clock, Instant scheduledTime) {
         ZonedDateTime now = ZonedDateTime.ofInstant(Instant.now(clock), timeZone);
-        return MonthDay.from(now) == monthDay;
+        return MonthDay.from(now).equals(monthDay);
     }
 
     @Override
@@ -33,24 +33,12 @@ public final class MonthDaySchedule implements ScheduleDefine{
         return false;
     }
 
-    interface Every {
-        Builder every(MonthDay monthDay);
-    }
-
-    public static class Builder implements ScheduleBuilder, Every{
+    public static class Builder{
         private MonthDay monthDay;
         private ZoneId timeZone = Clock.systemUTC().getZone();
 
-        private Builder() {
-        }
-
-        public static Every getInstance() {
-            return new Builder();
-        }
-    
-        public Builder every(MonthDay monthDay) {
+        public Builder(MonthDay monthDay) {
             this.monthDay = monthDay;
-            return this;
         }
 
         public Builder withZone(ZoneId timeZone) {
@@ -58,7 +46,6 @@ public final class MonthDaySchedule implements ScheduleDefine{
             return this;
         }
 
-        @Override
         public MonthDaySchedule build() {
             return new MonthDaySchedule(monthDay, timeZone);
         }
