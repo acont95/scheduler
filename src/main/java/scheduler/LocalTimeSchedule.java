@@ -1,6 +1,5 @@
 package scheduler;
 
-import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -17,23 +16,23 @@ public final class LocalTimeSchedule implements ScheduleDefine{
     }
 
     @Override
-    public Boolean shouldRun(Clock clock, Instant lastRun, Instant scheduledTime) {
-        ZonedDateTime now = ZonedDateTime.ofInstant(Instant.now(clock), timeZone);
+    public Boolean shouldRun(Instant now, Instant lastRun, Instant scheduledTime) {
+        ZonedDateTime dateTime = ZonedDateTime.ofInstant(now, timeZone);
 
         return (
-            !now.toLocalDate().isEqual(ZonedDateTime.ofInstant(lastRun, timeZone).toLocalDate()) 
-            && (now.toLocalTime().isAfter(localTime) || now.toLocalTime().equals(localTime))
+            !dateTime.toLocalDate().isEqual(ZonedDateTime.ofInstant(lastRun, timeZone).toLocalDate()) 
+            && (dateTime.toLocalTime().isAfter(localTime) || dateTime.toLocalTime().equals(localTime))
         );
     }
 
     @Override
-    public Boolean shouldRunInit(Clock clock, Instant scheduledTime) {
-        ZonedDateTime now = ZonedDateTime.ofInstant(Instant.now(clock), timeZone);
-        return now.toLocalTime().isAfter(localTime) || now.toLocalTime().equals(localTime);
+    public Boolean shouldRunInit(Instant now, Instant scheduledTime) {
+        ZonedDateTime dateTime = ZonedDateTime.ofInstant(now, timeZone);
+        return dateTime.toLocalTime().isAfter(localTime) || dateTime.toLocalTime().equals(localTime);
     }
 
     @Override
-    public Boolean shouldDelete(Clock clock) {
+    public Boolean shouldDelete(Instant now) {
         return false;
     }
 

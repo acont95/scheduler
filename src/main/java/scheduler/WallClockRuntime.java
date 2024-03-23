@@ -7,33 +7,28 @@ public final class WallClockRuntime implements SchedulerRuntime{
     private final long sleepMillis;
     private volatile boolean run = false;
 
-    public WallClockRuntime() {
-        clock = Clock.systemUTC();
-        sleepMillis=10;
-    }   
-
-    public WallClockRuntime(long sleepMillis) {
-        clock = Clock.systemUTC();
+    public WallClockRuntime(Clock clock, long sleepMillis) {
+        this.clock = clock;
         this.sleepMillis=sleepMillis;
     }   
 
-    public void start(Scheduler scheduler){
+    public WallClockRuntime(Clock clock) {
+        this.clock = clock;
+        this.sleepMillis=0;
+    }   
+
+    public void start(Scheduler scheduler) throws SchedulerRuntimeExecption {
         run = true;
-        while (run) {
-            try {
+        try {
+            while (run) {
                 if (sleepMillis != 0) {
                     Thread.sleep(sleepMillis);
                 }
-                scheduler.runPending(clock);
-
-            } catch (InterruptedException e) {
-                System.err.format("IOException: %s%n", e);
-            }
+                scheduler.runPending(clock.instant());
+            }            
+        } catch (InterruptedException e) {
+            throw new SchedulerRuntimeExecption(e.getMessage());
         }
-    }
-
-    public Clock getClock() {
-        return clock;
     }
 
     public void stop() {

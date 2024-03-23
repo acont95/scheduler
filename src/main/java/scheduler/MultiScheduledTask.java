@@ -1,6 +1,5 @@
 package scheduler;
 
-import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -33,15 +32,15 @@ public final class MultiScheduledTask implements ScheduledTask{
         this.scheduledTime = scheduledTime;
     }
 
-    public Boolean shouldRun(Clock clock) {
+    public Boolean shouldRun(Instant now) {
         if (init) {
-            return sched.stream().allMatch(val -> val.shouldRunInit(clock, scheduledTime));
+            return sched.stream().allMatch(val -> val.shouldRunInit(now, scheduledTime));
         } else {
             if (!synchronous) {
-                return sched.stream().allMatch(val -> val.shouldRun(clock, lastRun, scheduledTime));
+                return sched.stream().allMatch(val -> val.shouldRun(now, lastRun, scheduledTime));
             } else {
                 if (callableStatus.isDone()) {
-                    return sched.stream().allMatch(val -> val.shouldRun(clock, lastRun, scheduledTime));
+                    return sched.stream().allMatch(val -> val.shouldRun(now, lastRun, scheduledTime));
                 }
                 else {
                     return false;

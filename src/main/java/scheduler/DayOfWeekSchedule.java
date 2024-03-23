@@ -1,6 +1,5 @@
 package scheduler;
 
-import java.time.Clock;
 import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -17,21 +16,24 @@ public final class DayOfWeekSchedule implements ScheduleDefine{
     }
 
     @Override
-    public Boolean shouldRun(Clock clock, Instant lastRun, Instant scheduledTime) {
-        ZonedDateTime now = ZonedDateTime.ofInstant(Instant.now(clock), timeZone);
+    public Boolean shouldRun(Instant now, Instant lastRun, Instant scheduledTime) {
+        ZonedDateTime dateTime = ZonedDateTime.ofInstant(now, timeZone);
 
-        return (! now.toLocalDate().isEqual(ZonedDateTime.ofInstant(lastRun, now.getZone()).toLocalDate())) && (DayOfWeek.from(now) == dayOfWeek);
+        return (
+            !dateTime.toLocalDate().isEqual(ZonedDateTime.ofInstant(lastRun, dateTime.getZone()).toLocalDate())) 
+            && (DayOfWeek.from(dateTime) == dayOfWeek
+        );
     }
 
     @Override
-    public Boolean shouldRunInit(Clock clock, Instant scheduledTime) {
-        ZonedDateTime now = ZonedDateTime.ofInstant(Instant.now(clock), timeZone);
+    public Boolean shouldRunInit(Instant now, Instant scheduledTime) {
+        ZonedDateTime dateTime = ZonedDateTime.ofInstant(now, timeZone);
 
-        return DayOfWeek.from(now) == dayOfWeek;
+        return DayOfWeek.from(dateTime) == dayOfWeek;
     }
 
     @Override
-    public Boolean shouldDelete(Clock clock) {
+    public Boolean shouldDelete(Instant now) {
         return false;
     }
 

@@ -1,6 +1,5 @@
 package scheduler;
 
-import java.time.Clock;
 import java.time.Instant;
 import java.util.concurrent.Future;
 
@@ -32,15 +31,15 @@ public final class SingleScheduledTask implements ScheduledTask{
         this.scheduledTime = scheduledTime;
     }
 
-    public Boolean shouldRun(Clock clock) {
+    public Boolean shouldRun(Instant now) {
         if (init) {
-            return sched.shouldRunInit(clock, scheduledTime);
+            return sched.shouldRunInit(now, scheduledTime);
         } else {
             if (!synchronous) {
-                return sched.shouldRun(clock, lastRun, scheduledTime);
+                return sched.shouldRun(now, lastRun, scheduledTime);
             } else {
                 if (callableStatus.isDone()) {
-                    return sched.shouldRun(clock, lastRun, scheduledTime);
+                    return sched.shouldRun(now, lastRun, scheduledTime);
                 }
                 else {
                     return false;

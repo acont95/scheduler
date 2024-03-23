@@ -1,6 +1,5 @@
 package scheduler;
 
-import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 
@@ -18,8 +17,7 @@ public final class IntervalSchedule implements ScheduleDefine{
     }
 
     @Override
-    public Boolean shouldRun(Clock clock, Instant lastRun, Instant scheduledTime) {
-        Instant now = Instant.now(clock);
+    public Boolean shouldRun(Instant now, Instant lastRun, Instant scheduledTime) {
         if (alignedToEpoch) {
             return shouldRunAlgined(now, lastRun);
         } else {
@@ -28,8 +26,7 @@ public final class IntervalSchedule implements ScheduleDefine{
     }
 
     @Override
-    public Boolean shouldRunInit(Clock clock, Instant scheduledTime) {
-        Instant now = Instant.now(clock);
+    public Boolean shouldRunInit(Instant now, Instant scheduledTime) {
         if (!alignedToEpoch) {
             return now.isAfter(scheduledTime.plus(initialDelay)) || now.equals(scheduledTime.plus(initialDelay));
         } else {
@@ -62,7 +59,7 @@ public final class IntervalSchedule implements ScheduleDefine{
     }
 
     @Override
-    public Boolean shouldDelete(Clock clock) {
+    public Boolean shouldDelete(Instant now) {
         return false;
     }
 

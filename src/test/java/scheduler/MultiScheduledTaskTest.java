@@ -42,7 +42,7 @@ public class MultiScheduledTaskTest {
         );
 
         task.setScheduledTime(scheduledTime);
-        assertTrue(task.shouldRun(clock));
+        assertTrue(task.shouldRun(clock.instant()));
     }
 
     @Test
@@ -71,7 +71,7 @@ public class MultiScheduledTaskTest {
         );
 
         task.setScheduledTime(scheduledTime);
-        assertFalse(task.shouldRun(clock));
+        assertFalse(task.shouldRun(clock.instant()));
     }
 
     @Test
@@ -100,7 +100,7 @@ public class MultiScheduledTaskTest {
         );
         
         task.setScheduledTime(scheduledTime);
-        assertFalse(task.shouldRun(clock));
+        assertFalse(task.shouldRun(clock.instant()));
     }
 
     @Test
@@ -133,7 +133,7 @@ public class MultiScheduledTaskTest {
         CompletableFuture<Void> testResult = new CompletableFuture<>();
         testResult.complete(null);
         task.setLastRun(testResult, lastRun);
-        assertTrue(task.shouldRun(clock));
+        assertTrue(task.shouldRun(clock.instant()));
     }
 
     @Test
@@ -166,7 +166,7 @@ public class MultiScheduledTaskTest {
         CompletableFuture<Void> testResult = new CompletableFuture<>();
         testResult.complete(null);
         task.setLastRun(testResult, lastRun);
-        assertFalse(task.shouldRun(clock));
+        assertFalse(task.shouldRun(clock.instant()));
     }
 
     @Test
@@ -199,7 +199,7 @@ public class MultiScheduledTaskTest {
         CompletableFuture<Void> testResult = new CompletableFuture<>();
         testResult.complete(null);
         task.setLastRun(testResult, lastRun);
-        assertFalse(task.shouldRun(clock));
+        assertFalse(task.shouldRun(clock.instant()));
     }
 
     @Test
@@ -231,7 +231,7 @@ public class MultiScheduledTaskTest {
         task.setScheduledTime(scheduledTime);
         CompletableFuture<Void> testResult = new CompletableFuture<>();
         task.setLastRun(testResult, lastRun);
-        assertFalse(task.shouldRun(clock));
+        assertFalse(task.shouldRun(clock.instant()));
     }
 
     @Test
@@ -263,6 +263,6 @@ public class MultiScheduledTaskTest {
         task.setScheduledTime(scheduledTime);
         CompletableFuture<Void> testResult = new CompletableFuture<>();
         task.setLastRun(testResult, lastRun);
-        assertTrue(task.shouldRun(clock));
+        assertTrue(task.shouldRun(clock.instant()));
     }
 }

@@ -1,6 +1,5 @@
 package scheduler;
 
-import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -21,32 +20,21 @@ public final class SimulationRuntime implements SchedulerRuntime{
         clock = MutableClock.of(start, ZoneOffset.UTC);
     }   
 
-    public void start(Scheduler scheduler){
-        long sleepMillis;
-        if (stepPause.equals(Duration.ZERO)) {
-            sleepMillis = 0;
-        } else {
-            sleepMillis = stepPause.toMillis();
-        }
-
+    public void start(Scheduler scheduler) throws SchedulerRuntimeExecption {
+        long sleepMillis = stepPause.toMillis();
         run = true;
         
-        while (clock.instant().isBefore(end) && run) {
-            try {
+        try {
+            while (clock.instant().isBefore(end) && run) {
                 if (sleepMillis != 0) {
                     Thread.sleep(sleepMillis);
                 }
-                scheduler.runPendingBlocking(clock);
+                scheduler.runPendingBlocking(clock.instant());
                 clock.add(step);
-
-            } catch (InterruptedException e) {
-                System.err.format("IOException: %s%n", e);
-            }
+            }            
+        } catch (InterruptedException e) {
+            throw new SchedulerRuntimeExecption(e.getMessage());
         }
-    }
-
-    public Clock getClock() {
-        return clock;
     }
 
     public void stop() {

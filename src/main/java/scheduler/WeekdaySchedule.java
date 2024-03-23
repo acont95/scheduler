@@ -14,21 +14,23 @@ public final class WeekdaySchedule implements ScheduleDefine{
     }
 
     @Override
-    public Boolean shouldRun(Clock clock, Instant lastRun, Instant scheduledTime) {
-        ZonedDateTime now = ZonedDateTime.ofInstant(Instant.now(clock), timeZone);
-        return (! now.toLocalDate().isEqual(ZonedDateTime.ofInstant(lastRun, now.getZone()).toLocalDate())) && 
-            ((now.getDayOfWeek() != DayOfWeek.SATURDAY) && (now.getDayOfWeek() != DayOfWeek.SUNDAY));
-
+    public Boolean shouldRun(Instant now, Instant lastRun, Instant scheduledTime) {
+        ZonedDateTime dateTime = ZonedDateTime.ofInstant(now, timeZone);
+        return (
+            !dateTime.toLocalDate().isEqual(ZonedDateTime.ofInstant(lastRun, dateTime.getZone()).toLocalDate())
+            && dateTime.getDayOfWeek() != DayOfWeek.SATURDAY
+            && dateTime.getDayOfWeek() != DayOfWeek.SUNDAY
+        );
     }
 
     @Override
-    public Boolean shouldRunInit(Clock clock, Instant scheduledTime) {
-        ZonedDateTime now = ZonedDateTime.ofInstant(Instant.now(clock), timeZone);
-        return (now.getDayOfWeek() != DayOfWeek.SATURDAY) && (now.getDayOfWeek() != DayOfWeek.SUNDAY);
+    public Boolean shouldRunInit(Instant now, Instant scheduledTime) {
+        ZonedDateTime dateTime = ZonedDateTime.ofInstant(now, timeZone);
+        return dateTime.getDayOfWeek() != DayOfWeek.SATURDAY && dateTime.getDayOfWeek() != DayOfWeek.SUNDAY;
     }
 
     @Override
-    public Boolean shouldDelete(Clock clock) {
+    public Boolean shouldDelete(Instant now) {
         return false;
     }
 

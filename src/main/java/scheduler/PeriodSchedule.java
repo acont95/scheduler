@@ -1,9 +1,9 @@
 package scheduler;
 
-import java.time.Clock;
 import java.time.Instant;
 import java.time.Period;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.TemporalUnit;
 
@@ -30,8 +30,7 @@ public final class PeriodSchedule implements ScheduleDefine{
     }
 
     @Override
-    public Boolean shouldRun(Clock clock, Instant lastRun, Instant scheduledTime) {
-        Instant now = Instant.now(clock);
+    public Boolean shouldRun(Instant now, Instant lastRun, Instant scheduledTime) {
         if (!truncate) {
             return shouldRunNormal(now, lastRun);
         } else {
@@ -40,8 +39,7 @@ public final class PeriodSchedule implements ScheduleDefine{
     }
 
     @Override
-    public Boolean shouldRunInit(Clock clock, Instant scheduledTime) {
-        Instant now = Instant.now(clock);
+    public Boolean shouldRunInit(Instant now, Instant scheduledTime) {
         if (!truncate) {
             return now.isAfter(scheduledTime.plus(initialDelay)) || now.equals(scheduledTime.plus(initialDelay));
         } else {
@@ -70,14 +68,14 @@ public final class PeriodSchedule implements ScheduleDefine{
     }
 
     @Override
-    public Boolean shouldDelete(Clock clock) {
+    public Boolean shouldDelete(Instant now) {
         return false;
     }
 
     public static class Builder{
         private Period intervalPeriod;
         private Period initialDelay;
-        private ZoneId timeZone = Clock.systemUTC().getZone();
+        private ZoneId timeZone = ZoneOffset.UTC;
         private boolean truncate = false;
         private TemporalUnit temporalUnit;
 

@@ -1,6 +1,5 @@
 package scheduler;
 
-import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -18,24 +17,24 @@ public final class DayOfMonthSchedule implements ScheduleDefine{
     }
 
     @Override
-    public Boolean shouldRun(Clock clock, Instant lastRun, Instant scheduledTime) {
-        ZonedDateTime now = ZonedDateTime.ofInstant(Instant.now(clock), timeZone);
+    public Boolean shouldRun(Instant now, Instant lastRun, Instant scheduledTime) {
+        ZonedDateTime dateTime = ZonedDateTime.ofInstant(now, timeZone);
 
         return (
-            !now.toLocalDate().isEqual(ZonedDateTime.ofInstant(lastRun, now.getZone()).toLocalDate())) 
-            && (DayOfMonth.from(now).equals(dayOfMonth)
+            !dateTime.toLocalDate().isEqual(ZonedDateTime.ofInstant(lastRun, dateTime.getZone()).toLocalDate())) 
+            && (DayOfMonth.from(dateTime).equals(dayOfMonth)
         );
     }
 
     @Override
-    public Boolean shouldRunInit(Clock clock, Instant scheduledTime) {
-        ZonedDateTime now = ZonedDateTime.ofInstant(Instant.now(clock), timeZone);
+    public Boolean shouldRunInit(Instant now, Instant scheduledTime) {
+        ZonedDateTime dateTime = ZonedDateTime.ofInstant(now, timeZone);
 
-        return DayOfMonth.from(now).equals(dayOfMonth);
+        return DayOfMonth.from(dateTime).equals(dayOfMonth);
     }
 
     @Override
-    public Boolean shouldDelete(Clock clock) {
+    public Boolean shouldDelete(Instant now) {
         return false;
     }
 

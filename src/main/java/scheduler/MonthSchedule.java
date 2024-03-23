@@ -1,10 +1,10 @@
 package scheduler;
 
-import java.time.Clock;
 import java.time.Instant;
 import java.time.Month;
 import java.time.YearMonth;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
 public final class MonthSchedule implements ScheduleDefine{
@@ -17,26 +17,28 @@ public final class MonthSchedule implements ScheduleDefine{
     }
 
     @Override
-    public Boolean shouldRun(Clock clock, Instant lastRun, Instant scheduledTime) {
-        ZonedDateTime now = ZonedDateTime.ofInstant(Instant.now(clock), timeZone);
-        return (!YearMonth.from(now).equals(YearMonth.from(ZonedDateTime.ofInstant(lastRun, timeZone)))) && 
-            (now.getMonth() == month);
+    public Boolean shouldRun(Instant now, Instant lastRun, Instant scheduledTime) {
+        ZonedDateTime dateTime = ZonedDateTime.ofInstant(now, timeZone);
+        return (
+            !YearMonth.from(dateTime).equals(YearMonth.from(ZonedDateTime.ofInstant(lastRun, timeZone)))
+            && dateTime.getMonth() == month
+        );
     }
 
     @Override
-    public Boolean shouldRunInit(Clock clock, Instant scheduledTime) {
-        ZonedDateTime now = ZonedDateTime.ofInstant(Instant.now(clock), timeZone);
-        return now.getMonth() == month;
+    public Boolean shouldRunInit(Instant now, Instant scheduledTime) {
+        ZonedDateTime dateTime = ZonedDateTime.ofInstant(now, timeZone);
+        return dateTime.getMonth() == month;
     }
 
     @Override
-    public Boolean shouldDelete(Clock clock) {
+    public Boolean shouldDelete(Instant now) {
         return false;
     }
 
     public static class Builder{
         private Month month;
-        private ZoneId timeZone = Clock.systemUTC().getZone();
+        private ZoneId timeZone = ZoneOffset.UTC;
 
         public Builder(Month month) {
             this.month = month;

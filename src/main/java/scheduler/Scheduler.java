@@ -1,6 +1,5 @@
 package scheduler;
 
-import java.time.Clock;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,25 +12,29 @@ public final class Scheduler {
     private final List<ScheduledTask> jobs = new ArrayList<ScheduledTask>();
     final ExecutorService executorService;
 
+    public Scheduler() {
+        this.executorService  = Executors.newSingleThreadExecutor();
+    }
+
     public Scheduler(Integer nThreads) {
         this.executorService  = Executors.newFixedThreadPool(nThreads);
     }
 
-    public List<Future<Void>> runPending(Clock clock) {
+    public List<Future<Void>> runPending(Instant now) {
         return jobs.stream()
-            .filter(j -> j.shouldRun(clock))
+            .filter(j -> j.shouldRun(now))
             .map(j -> {
                 Future<Void> result = executorService.submit(j.getTask());
-                j.setLastRun(result, clock.instant());
+                j.setLastRun(result, now);
                 return result;
             })
             .toList();
     }
 
-    public List<Future<Void>> runPendingBlocking(Clock clock) throws InterruptedException{
+    public List<Future<Void>> runPendingBlocking(Instant now) throws InterruptedException{
 
         List<ScheduledTask> tasks = jobs.stream()
-            .filter(j -> j.shouldRun(clock))
+            .filter(j -> j.shouldRun(now))
             .toList();
 
         List<ScheduleCallable> callables = tasks.stream()
@@ -41,7 +44,7 @@ public final class Scheduler {
         List<Future<Void>> futures = executorService.invokeAll(callables);
 
         for (int i=0; i<tasks.size(); i++) {
-            tasks.get(i).setLastRun(futures.get(i), clock.instant());
+            tasks.get(i).setLastRun(futures.get(i), now);
         }
 
         return futures;

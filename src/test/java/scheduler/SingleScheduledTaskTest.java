@@ -34,7 +34,7 @@ public class SingleScheduledTaskTest {
             true
         );
         task.setScheduledTime(scheduledTime);
-        assertTrue(task.shouldRun(clock));
+        assertTrue(task.shouldRun(clock.instant()));
     }
 
     @Test
@@ -58,7 +58,7 @@ public class SingleScheduledTaskTest {
             true
         );
         task.setScheduledTime(scheduledTime);
-        assertFalse(task.shouldRun(clock));
+        assertFalse(task.shouldRun(clock.instant()));
     }
 
     @Test
@@ -86,7 +86,7 @@ public class SingleScheduledTaskTest {
         CompletableFuture<Void> testResult = new CompletableFuture<>();
         testResult.complete(null);
         task.setLastRun(testResult, lastRun);
-        assertTrue(task.shouldRun(clock));
+        assertTrue(task.shouldRun(clock.instant()));
     }
 
     @Test
@@ -114,7 +114,7 @@ public class SingleScheduledTaskTest {
         CompletableFuture<Void> testResult = new CompletableFuture<>();
         testResult.complete(null);
         task.setLastRun(testResult, lastRun);
-        assertFalse(task.shouldRun(clock));
+        assertFalse(task.shouldRun(clock.instant()));
     }
 
     @Test
@@ -141,7 +141,7 @@ public class SingleScheduledTaskTest {
         task.setScheduledTime(scheduledTime);
         CompletableFuture<Void> testResult = new CompletableFuture<>();
         task.setLastRun(testResult, lastRun);
-        assertFalse(task.shouldRun(clock));
+        assertFalse(task.shouldRun(clock.instant()));
     }
 
     @Test
@@ -168,6 +168,6 @@ public class SingleScheduledTaskTest {
         task.setScheduledTime(scheduledTime);
         CompletableFuture<Void> testResult = new CompletableFuture<>();
         task.setLastRun(testResult, lastRun);
-        assertTrue(task.shouldRun(clock));
+        assertTrue(task.shouldRun(clock.instant()));
     }
 }
