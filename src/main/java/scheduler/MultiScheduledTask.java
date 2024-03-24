@@ -2,6 +2,7 @@ package scheduler;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 public final class MultiScheduledTask implements ScheduledTask{
@@ -9,7 +10,7 @@ public final class MultiScheduledTask implements ScheduledTask{
     private final ScheduleCallable task;
     private final List<ScheduleDefine> sched;
     private Instant scheduledTime;
-    private Future<Void> callableStatus = null;
+    private Future<Void> callableStatus = new CompletableFuture<>();
     private Instant lastRun;
     private boolean init = true;
     private final boolean synchronous;
@@ -61,5 +62,9 @@ public final class MultiScheduledTask implements ScheduledTask{
 
     public String getName() {
         return name;
+    }
+
+    public Future<Void> getStatus() {
+        return callableStatus;
     }
 }

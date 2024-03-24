@@ -9,4 +9,5 @@ public interface ScheduledTask {
     void setLastRun(Future<Void> callableStatus, Instant lastRun);
     ScheduleCallable getTask();
     String getName();
+    Future<Void> getStatus();
 }
