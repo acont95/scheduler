@@ -1,6 +1,7 @@
 package scheduler;
 
 import java.time.Clock;
+import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.Future;
 
@@ -19,6 +20,7 @@ public final class WallClockRuntime implements SchedulerRuntime{
         this.sleepMillis=0;
     }   
 
+    @Override
     public List<Future<Void>> runPendingScheduler(Scheduler scheduler) throws SchedulerRuntimeExecption {
         try {
             if (sleepMillis != 0) {
@@ -30,6 +32,7 @@ public final class WallClockRuntime implements SchedulerRuntime{
         }
     }
 
+    @Override
     public void start(Scheduler scheduler) throws SchedulerRuntimeExecption {
         run = true;
         while (run) {
@@ -37,7 +40,13 @@ public final class WallClockRuntime implements SchedulerRuntime{
         }            
     }
 
+    @Override
     public void stop() {
         run = false;
+    }
+
+    @Override
+    public Instant getInstant() {
+        return clock.instant();
     }
 }

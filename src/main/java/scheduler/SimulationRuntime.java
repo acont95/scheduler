@@ -24,6 +24,7 @@ public final class SimulationRuntime implements SchedulerRuntime{
         this.stepPause = stepPause;
     }   
 
+    @Override
     public List<Future<Void>> runPendingScheduler(Scheduler scheduler) throws SchedulerRuntimeExecption{
         long sleepMillis = stepPause.toMillis();
         
@@ -38,6 +39,7 @@ public final class SimulationRuntime implements SchedulerRuntime{
         }
     }
 
+    @Override
     public void start(Scheduler scheduler) throws SchedulerRuntimeExecption {
         run = true;
         while (run) {
@@ -46,6 +48,7 @@ public final class SimulationRuntime implements SchedulerRuntime{
         }            
     }
 
+    @Override
     public void stop() {
         run = false;
     }
@@ -55,5 +58,10 @@ public final class SimulationRuntime implements SchedulerRuntime{
         if (clock.instant().isAfter(end)) {
             run=false;
         }
+    }
+
+    @Override
+    public Instant getInstant() {
+        return clock.instant();
     }
 }
