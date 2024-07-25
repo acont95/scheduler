@@ -49,4 +49,9 @@ public final class WallClockRuntime implements SchedulerRuntime{
     public Instant getInstant() {
         return clock.instant();
     }
+
+    @Override
+    public boolean isRunning() {
+        return run;
+    }
 }

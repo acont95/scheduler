@@ -64,4 +64,9 @@ public final class SimulationRuntime implements SchedulerRuntime{
     public Instant getInstant() {
         return clock.instant();
     }
+
+    @Override
+    public boolean isRunning() {
+        return run;
+    }
 }
