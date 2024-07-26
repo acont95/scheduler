@@ -1,11 +1,27 @@
 version: "3"
 
 tasks:
+  clean-linux:
+    desc: Clean linux/darwin target folder
+    platforms: [linux,darwin]
+    cmd:
+      rm -rf target
+  
+  clean-windows:
+    desc: Clean windows target folder
+    platforms: [windows]
+    vars:
+      TARGET_PATH: target
+    cmds:
+      - powershell New-Item -ItemType Directory -Force -Path {{.TARGET_PATH}}
+      - powershell Remove-Item -Recurse -Force {{.TARGET_PATH}}
 
   build:
     desc: Scheduler build image
+    deps:
+      - clean-linux
+      - clean-windows
     cmds:
-      - rm -rf target/*
       - docker image build --target build --tag scheduler-build:latest .
       - docker container create --name scheduler-build-container scheduler-build:latest
       - docker container cp scheduler-build-container:/usr/app/target target
