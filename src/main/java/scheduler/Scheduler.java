@@ -3,6 +3,7 @@ package scheduler;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -37,7 +38,7 @@ public final class Scheduler {
             .filter(j -> j.shouldRun(now))
             .toList();
 
-        List<ScheduleCallable> callables = tasks.stream()
+        List<Callable<Void>> callables = tasks.stream()
             .map(t -> {return t.getTask();})  
             .toList();      
 

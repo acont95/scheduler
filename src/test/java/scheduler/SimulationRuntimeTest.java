@@ -9,6 +9,7 @@ import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -28,7 +29,7 @@ public class SimulationRuntimeTest {
             now, 
             ZoneId.ofOffset("UTC", ZoneOffset.UTC)
         );
-        ScheduleCallable testCallable = new ScheduleCallable(clock) {
+        Callable<Void> testCallable = new Callable<Void>() {
             @Override
             public Void call() {
                 return null;
@@ -74,7 +75,7 @@ public class SimulationRuntimeTest {
             now, 
             ZoneId.ofOffset("UTC", ZoneOffset.UTC)
         );
-        ScheduleCallable testCallable = new ScheduleCallable(clock) {
+        Callable<Void> testCallable = new Callable<Void>() {
             @Override
             public Void call() {
                 return null;
@@ -116,7 +117,7 @@ public class SimulationRuntimeTest {
             Instant.parse("2000-12-15T00:00:00.00Z"), 
             ZoneId.ofOffset("UTC", ZoneOffset.UTC)
         );
-        ScheduleCallable testCallable = new ScheduleCallable(clock) {
+        Callable<Void> testCallable = new Callable<Void>() {
             @Override
             public Void call() {
                 return null;

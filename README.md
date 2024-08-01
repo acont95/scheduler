@@ -164,9 +164,9 @@ ScheduleDefine sched = PeriodSchedule.Builder.getInstance()
   .build();
 ```
 
-* Extend ScheduleCallable to define your callable class:
+* Extend Callable<Void> to define your callable class:
 ```java
-class TestSchedulerCallable extends ScheduleCallable {
+class TestSchedulerCallable extends Callable<Void> {
 
     @Override
     public Void call() {

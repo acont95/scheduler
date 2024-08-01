@@ -1,12 +1,13 @@
 package scheduler;
 
 import java.time.Instant;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 public final class SingleScheduledTask implements ScheduledTask{
     private final String name;
-    private final ScheduleCallable task;
+    private final Callable<Void> task;
     private final ScheduleDefine sched;
     private Instant scheduledTime;
     private Future<Void> callableStatus = new CompletableFuture<>();
@@ -14,14 +15,14 @@ public final class SingleScheduledTask implements ScheduledTask{
     private boolean init = true;
     private final boolean synchronous;
 
-    public SingleScheduledTask(String name, ScheduleCallable task, ScheduleDefine sched, boolean synchronous) {
+    public SingleScheduledTask(String name, Callable<Void> task, ScheduleDefine sched, boolean synchronous) {
         this.name = name;
         this.task = task;
         this.sched = sched;
         this.synchronous = synchronous;
     }
 
-    public SingleScheduledTask(String name, ScheduleCallable task, ScheduleDefine sched) {
+    public SingleScheduledTask(String name, Callable<Void> task, ScheduleDefine sched) {
         this.name = name;
         this.task = task;
         this.sched = sched;
@@ -55,7 +56,7 @@ public final class SingleScheduledTask implements ScheduledTask{
         this.callableStatus = callableStatus;
     }
 
-    public ScheduleCallable getTask() {
+    public Callable<Void> getTask() {
         return task;
     }
 

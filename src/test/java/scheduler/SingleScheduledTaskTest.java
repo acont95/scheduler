@@ -8,6 +8,7 @@ import java.time.Instant;
 import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 
 import org.junit.jupiter.api.Test;
@@ -17,10 +18,10 @@ public class SingleScheduledTaskTest {
     public void shouldRunInit() {
         Instant scheduledTime = Instant.parse("2000-12-01T00:00:00.00Z");
         Clock clock = Clock.fixed(Instant.parse("2001-01-01T00:00:00.00Z"), ZoneId.ofOffset("UTC", ZoneOffset.UTC));
-        ScheduleCallable testCallable = new ScheduleCallable(clock) {
+        Callable<Void> testCallable = new Callable<Void>() {
             @Override
             public Void call() {
-                System.out.println(Instant.now(getClock()));
+                System.out.println(Instant.now(clock));
                 return null;
             }
         };
@@ -41,10 +42,10 @@ public class SingleScheduledTaskTest {
     public void shouldntRunInit() {
         Instant scheduledTime = Instant.parse("2000-12-01T00:00:00.00Z");
         Clock clock = Clock.fixed(Instant.parse("2000-12-30T00:00:00.00Z"), ZoneId.ofOffset("UTC", ZoneOffset.UTC));
-        ScheduleCallable testCallable = new ScheduleCallable(clock) {
+        Callable<Void> testCallable = new Callable<Void>() {
             @Override
             public Void call() {
-                System.out.println(Instant.now(getClock()));
+                System.out.println(Instant.now(clock));
                 return null;
             }
         };
@@ -66,10 +67,10 @@ public class SingleScheduledTaskTest {
         Instant scheduledTime = Instant.parse("2000-01-01T00:00:00.00Z");
         Instant lastRun = Instant.parse("2000-01-15T00:00:00.00Z");
         Clock clock = Clock.fixed(Instant.parse("2001-01-01T00:00:00.00Z"), ZoneId.ofOffset("UTC", ZoneOffset.UTC));
-        ScheduleCallable testCallable = new ScheduleCallable(clock) {
+        Callable<Void> testCallable = new Callable<Void>() {
             @Override
             public Void call() {
-                System.out.println(Instant.now(getClock()));
+                System.out.println(Instant.now(clock));
                 return null;
             }
         };
@@ -94,10 +95,10 @@ public class SingleScheduledTaskTest {
         Instant scheduledTime = Instant.parse("2000-01-01T00:00:00.00Z");
         Instant lastRun = Instant.parse("2000-01-15T00:00:00.00Z");
         Clock clock = Clock.fixed(Instant.parse("2000-12-01T00:00:00.00Z"), ZoneId.ofOffset("UTC", ZoneOffset.UTC));
-        ScheduleCallable testCallable = new ScheduleCallable(clock) {
+        Callable<Void> testCallable = new Callable<Void>() {
             @Override
             public Void call() {
-                System.out.println(Instant.now(getClock()));
+                System.out.println(Instant.now(clock));
                 return null;
             }
         };
@@ -122,10 +123,10 @@ public class SingleScheduledTaskTest {
         Instant scheduledTime = Instant.parse("2000-01-01T00:00:00.00Z");
         Instant lastRun = Instant.parse("2000-01-15T00:00:00.00Z");
         Clock clock = Clock.fixed(Instant.parse("2001-01-01T00:00:00.00Z"), ZoneId.ofOffset("UTC", ZoneOffset.UTC));
-        ScheduleCallable testCallable = new ScheduleCallable(clock) {
+        Callable<Void> testCallable = new Callable<Void>() {
             @Override
             public Void call() {
-                System.out.println(Instant.now(getClock()));
+                System.out.println(Instant.now(clock));
                 return null;
             }
         };
@@ -149,10 +150,10 @@ public class SingleScheduledTaskTest {
         Instant scheduledTime = Instant.parse("2000-01-01T00:00:00.00Z");
         Instant lastRun = Instant.parse("2000-01-15T00:00:00.00Z");
         Clock clock = Clock.fixed(Instant.parse("2001-01-01T00:00:00.00Z"), ZoneId.ofOffset("UTC", ZoneOffset.UTC));
-        ScheduleCallable testCallable = new ScheduleCallable(clock) {
+        Callable<Void> testCallable = new Callable<Void>() {
             @Override
             public Void call() {
-                System.out.println(Instant.now(getClock()));
+                System.out.println(Instant.now(clock));
                 return null;
             }
         };
